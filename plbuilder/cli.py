@@ -71,6 +71,10 @@ def init():
     os.makedirs(presentation_sources_path)
     os.makedirs(document_sources_path)
 
+    assets_path = os.path.join(CREATED_DIRECTORY, 'assets')
+    images_path = os.path.join(assets_path, 'images')
+    os.makedirs(images_path)
+
 
 class ProjectExistsException(Exception):
     pass
