@@ -32,9 +32,11 @@ def create_presentation_template(name: str):
     file_path = slides_source_path(full_file_name)
     create_template(
         [
-            'general',
+            'general_imports',
+            'presentation_imports',
             'author',
-            'presentation'
+            'presentation',
+            'general',
         ],
         out_path=file_path
     )
@@ -49,9 +51,11 @@ def create_document_template(name: str):
     file_path = documents_source_path(full_file_name)
     create_template(
         [
-            'general',
+            'general_imports',
+            'document_imports',
             'author',
-            'document'
+            'document',
+            'general',
         ],
         out_path=file_path
     )
