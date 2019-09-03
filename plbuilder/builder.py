@@ -108,7 +108,7 @@ def create_presentation_by_file_path(file_path: str):
         author=getattr(mod, 'AUTHOR', None),
         short_author=getattr(mod, 'SHORT_AUTHOR', None),
         institutions=getattr(mod, 'INSTITUTIONS', None),
-        short_institution=getattr(mod, 'SHORT_INSTITUTIONS', None),
+        short_institution=getattr(mod, 'SHORT_INSTITUTION', None),
     )
 
 
