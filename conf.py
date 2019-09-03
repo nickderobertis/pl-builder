@@ -5,7 +5,7 @@
 PACKAGE_NAME = 'pl-builder'
 
 # Package version in the format (major, minor, release)
-PACKAGE_VERSION_TUPLE = (0, 1, 6)
+PACKAGE_VERSION_TUPLE = (0, 1, 7)
 
 # Short description of the package
 PACKAGE_SHORT_DESCRIPTION = 'Document building framework built on Pyexlatex'

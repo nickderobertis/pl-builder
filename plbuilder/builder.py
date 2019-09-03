@@ -95,19 +95,20 @@ def build_all():
 def create_presentation_by_file_path(file_path: str):
     print(f'Creating presentation for {file_path}')
     mod = _module_from_file(file_path)
+
     build_from_content(
         mod.get_content(),
         pl_class=mod.DOCUMENT_CLASS,
         outfolder=mod.OUTPUT_LOCATION,
-        title=mod.TITLE,
-        short_title=mod.SHORT_TITLE,
-        subtitle=mod.SUBTITLE,
-        handouts_outfolder=mod.HANDOUTS_OUTPUT_LOCATION,
-        index=mod.ORDER,
-        author=mod.AUTHOR,
-        short_author=mod.SHORT_AUTHOR,
-        institutions=mod.INSTITUTIONS,
-        short_institution=mod.SHORT_INSTITUTIONS,
+        title=getattr(mod, 'TITLE', None),
+        short_title=getattr(mod, 'SHORT_TITLE', None),
+        subtitle=getattr(mod, 'SUBTITLE', None),
+        handouts_outfolder=getattr(mod, 'HANDOUTS_OUTPUT_LOCATION', None),
+        index=getattr(mod, 'ORDER', None),
+        author=getattr(mod, 'AUTHOR', None),
+        short_author=getattr(mod, 'SHORT_AUTHOR', None),
+        institutions=getattr(mod, 'INSTITUTIONS', None),
+        short_institution=getattr(mod, 'SHORT_INSTITUTIONS', None),
     )
 
 
