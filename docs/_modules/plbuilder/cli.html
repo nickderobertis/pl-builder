@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>plbuilder.cli &#8212; pl-builder 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for plbuilder.cli</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">fire</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">plbuilder.config</span> <span class="k">import</span> <span class="n">CREATED_DIRECTORY</span>
+
+<span class="kn">from</span> <span class="nn">plbuilder.builder</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">build_all</span><span class="p">,</span>
+    <span class="n">create_presentation_by_file_path</span><span class="p">,</span>
+    <span class="n">create_presentation_template</span><span class="p">,</span>
+    <span class="n">create_document_template</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="build"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.cli.build">[docs]</a><span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create slides and handout PDFs from plbuilder pyexlatex templates.</span>
+<span class="sd">    Passing no arguments will build all templates.</span>
+
+<span class="sd">    :param file_path: path of template from which to build PDFs</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">build_all</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">create_presentation_by_file_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.cli.create">[docs]</a><span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">doc_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a slide template using the passed name</span>
+
+<span class="sd">    :param doc_type: &#39;presentation&#39; or &#39;document&#39;</span>
+<span class="sd">    :param name: Display name, will be standardized to snakecase and lowercase for use in the file name</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">doc_type</span> <span class="o">=</span> <span class="n">doc_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">doc_type</span> <span class="o">==</span> <span class="s1">&#39;presentation&#39;</span><span class="p">:</span>
+        <span class="n">create_presentation_template</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">doc_type</span> <span class="o">==</span> <span class="s1">&#39;document&#39;</span><span class="p">:</span>
+        <span class="n">create_document_template</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;must pass document or presentation as first argument, got </span><span class="si">{doc_type}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="init"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.cli.init">[docs]</a><span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a plbuilder project in the current directory</span>
+
+
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">CREATED_DIRECTORY</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ProjectExistsException</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;{os.getcwd()}&#39;</span><span class="p">)</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">CREATED_DIRECTORY</span><span class="p">)</span>
+
+    <span class="n">pl_builder_source_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+    <span class="n">templates_source</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pl_builder_source_path</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">templates_source</span><span class="p">,</span> <span class="n">CREATED_DIRECTORY</span><span class="p">)</span>
+
+    <span class="n">paths_source</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pl_builder_source_path</span><span class="p">,</span> <span class="s1">&#39;paths.py&#39;</span><span class="p">)</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">paths_source</span><span class="p">,</span> <span class="n">CREATED_DIRECTORY</span><span class="p">)</span>
+
+    <span class="n">sources_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CREATED_DIRECTORY</span><span class="p">,</span> <span class="s1">&#39;sources&#39;</span><span class="p">)</span>
+    <span class="n">presentation_sources_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sources_path</span><span class="p">,</span> <span class="s1">&#39;presentation&#39;</span><span class="p">)</span>
+    <span class="n">document_sources_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sources_path</span><span class="p">,</span> <span class="s1">&#39;document&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">presentation_sources_path</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">document_sources_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProjectExistsException"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.cli.ProjectExistsException">[docs]</a><span class="k">class</span> <span class="nc">ProjectExistsException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">fire</span><span class="o">.</span><span class="n">Fire</span><span class="p">({</span>
+        <span class="s1">&#39;build&#39;</span><span class="p">:</span> <span class="n">build</span><span class="p">,</span>
+        <span class="s1">&#39;create&#39;</span><span class="p">:</span> <span class="n">create</span><span class="p">,</span>
+        <span class="s1">&#39;init&#39;</span><span class="p">:</span> <span class="n">init</span>
+    <span class="p">})</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Getting started with pl-builder</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">plbuilder</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Nick DeRobertis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

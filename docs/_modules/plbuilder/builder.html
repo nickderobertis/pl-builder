@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>plbuilder.builder &#8212; pl-builder 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for plbuilder.builder</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">importlib.util</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">plbuild.paths</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">SLIDES_BUILD_PATH</span><span class="p">,</span>
+    <span class="n">SLIDES_SOURCE_PATH</span><span class="p">,</span>
+    <span class="n">slides_source_path</span><span class="p">,</span>
+    <span class="n">HANDOUTS_BUILD_PATH</span><span class="p">,</span>
+    <span class="n">DOCUMENTS_SOURCE_PATH</span><span class="p">,</span>
+    <span class="n">documents_source_path</span><span class="p">,</span>
+    <span class="n">templates_path_func</span>
+<span class="p">)</span>
+
+<span class="n">IGNORED_FILES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;__init__.py&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="get_all_source_files"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.get_all_source_files">[docs]</a><span class="k">def</span> <span class="nf">get_all_source_files</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">slide_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">SLIDES_SOURCE_PATH</span><span class="p">))[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">IGNORED_FILES</span><span class="p">]</span>
+    <span class="n">slide_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">slides_source_path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">slide_sources</span><span class="p">]</span>
+    <span class="n">doc_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">DOCUMENTS_SOURCE_PATH</span><span class="p">))[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">IGNORED_FILES</span><span class="p">]</span>
+    <span class="n">doc_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">documents_source_path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">doc_sources</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">slide_sources</span> <span class="o">+</span> <span class="n">doc_sources</span></div>
+
+
+<div class="viewcode-block" id="create_presentation_template"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.create_presentation_template">[docs]</a><span class="k">def</span> <span class="nf">create_presentation_template</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">base_file_name</span> <span class="o">=</span> <span class="n">get_file_name_from_display_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">full_file_name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{base_file_name}</span><span class="s1">.py&#39;</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">slides_source_path</span><span class="p">(</span><span class="n">full_file_name</span><span class="p">)</span>
+    <span class="n">create_template</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;general&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;author&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;presentation&#39;</span>
+        <span class="p">],</span>
+        <span class="n">out_path</span><span class="o">=</span><span class="n">file_path</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_document_template"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.create_document_template">[docs]</a><span class="k">def</span> <span class="nf">create_document_template</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">base_file_name</span> <span class="o">=</span> <span class="n">get_file_name_from_display_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">full_file_name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{base_file_name}</span><span class="s1">.py&#39;</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">documents_source_path</span><span class="p">(</span><span class="n">full_file_name</span><span class="p">)</span>
+    <span class="n">create_template</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;general&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;author&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;document&#39;</span>
+        <span class="p">],</span>
+        <span class="n">out_path</span><span class="o">=</span><span class="n">file_path</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_template"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.create_template">[docs]</a><span class="k">def</span> <span class="nf">create_template</span><span class="p">(</span><span class="n">template_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">out_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">template_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">templates_path_func</span><span class="p">(</span><span class="n">template</span> <span class="o">+</span> <span class="s1">&#39;.py&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">template_names</span><span class="p">]</span>
+    <span class="n">template_str</span> <span class="o">=</span> <span class="n">_create_template_str</span><span class="p">(</span><span class="n">template_paths</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_create_template_str</span><span class="p">(</span><span class="n">template_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">template_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">template_paths</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">template_str</span> <span class="o">+=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">template_str</span>
+
+
+
+<div class="viewcode-block" id="get_file_name_from_display_name"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.get_file_name_from_display_name">[docs]</a><span class="k">def</span> <span class="nf">get_file_name_from_display_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts name to snake case and lower case for use in file name</span>
+
+<span class="sd">    :param name: display name, can have spaces and capitalization</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="build_all"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.build_all">[docs]</a><span class="k">def</span> <span class="nf">build_all</span><span class="p">():</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">get_all_source_files</span><span class="p">()</span>
+    <span class="p">[</span><span class="n">create_presentation_by_file_path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="create_presentation_by_file_path"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.create_presentation_by_file_path">[docs]</a><span class="k">def</span> <span class="nf">create_presentation_by_file_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Creating presentation for </span><span class="si">{file_path}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">_module_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="n">build_from_content</span><span class="p">(</span>
+        <span class="n">mod</span><span class="o">.</span><span class="n">get_content</span><span class="p">(),</span>
+        <span class="n">pl_class</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOCUMENT_CLASS</span><span class="p">,</span>
+        <span class="n">outfolder</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">OUTPUT_LOCATION</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">TITLE</span><span class="p">,</span>
+        <span class="n">short_title</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">SHORT_TITLE</span><span class="p">,</span>
+        <span class="n">subtitle</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">SUBTITLE</span><span class="p">,</span>
+        <span class="n">handouts_outfolder</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">HANDOUTS_OUTPUT_LOCATION</span><span class="p">,</span>
+        <span class="n">index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">file_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">author</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">AUTHOR</span><span class="p">,</span>
+        <span class="n">short_author</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">SHORT_AUTHOR</span><span class="p">,</span>
+        <span class="n">institutions</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INSTITUTIONS</span><span class="p">,</span>
+        <span class="n">short_institution</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">SHORT_INSTITUTIONS</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_from_content"><a class="viewcode-back" href="../../api/plbuilder.html#plbuilder.builder.build_from_content">[docs]</a><span class="k">def</span> <span class="nf">build_from_content</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">pl_class</span><span class="p">,</span> <span class="n">outfolder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">short_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">handouts_outfolder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">author</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">short_author</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">institutions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">short_institution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="p">):</span>
+    <span class="n">out_name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{index}</span><span class="s1"> </span><span class="si">{title}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">title</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">short_title</span><span class="o">=</span><span class="n">short_title</span><span class="p">,</span>
+        <span class="n">subtitle</span><span class="o">=</span><span class="n">subtitle</span><span class="p">,</span>
+        <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span>
+        <span class="n">short_author</span><span class="o">=</span><span class="n">short_author</span><span class="p">,</span>
+        <span class="n">institutions</span><span class="o">=</span><span class="n">institutions</span><span class="p">,</span>
+        <span class="n">short_institution</span><span class="o">=</span><span class="n">short_institution</span>
+    <span class="p">)</span>
+    <span class="n">fmp</span> <span class="o">=</span> <span class="n">pl_class</span><span class="p">(</span>
+        <span class="n">content</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="n">fmp</span><span class="o">.</span><span class="n">to_pdf</span><span class="p">(</span>
+        <span class="n">outfolder</span><span class="p">,</span>
+        <span class="n">out_name</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">handouts_outfolder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fmp_handout</span> <span class="o">=</span> <span class="n">pl_class</span><span class="p">(</span>
+            <span class="n">content</span><span class="p">,</span>
+            <span class="n">handouts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="n">fmp_handout</span><span class="o">.</span><span class="n">to_pdf</span><span class="p">(</span>
+            <span class="n">handouts_outfolder</span><span class="p">,</span>
+            <span class="n">out_name</span>
+        <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_module_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">mod_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_module_from_file_and_name</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">mod_name</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_module_from_file_and_name</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mod</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">build_all</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Getting started with pl-builder</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">plbuilder</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Nick DeRobertis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
