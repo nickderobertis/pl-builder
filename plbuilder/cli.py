@@ -59,7 +59,8 @@ def init():
     pl_builder_source_path = os.path.dirname(os.path.abspath(__file__))
 
     templates_source = os.path.join(pl_builder_source_path, 'templates')
-    shutil.copytree(templates_source, CREATED_DIRECTORY)
+    templates_out_path = os.path.join(CREATED_DIRECTORY, 'templates')
+    shutil.copytree(templates_source, templates_out_path)
 
     paths_source = os.path.join(pl_builder_source_path, 'paths.py')
     shutil.copy(paths_source, CREATED_DIRECTORY)
