@@ -72,6 +72,7 @@ def _create_template_str(template_paths: Sequence[str]) -> str:
     for path in template_paths:
         with open(path, 'r') as f:
             template_str += f.read()
+    template_str += '\n'
     return template_str
 
 
