@@ -1,15 +1,6 @@
 from typing import Sequence, List, Optional, Union
 import importlib.util
 import os
-from plbuild.paths import (
-    SLIDES_BUILD_PATH,
-    SLIDES_SOURCE_PATH,
-    slides_source_path,
-    HANDOUTS_BUILD_PATH,
-    DOCUMENTS_SOURCE_PATH,
-    documents_source_path,
-    templates_path_func
-)
 
 IGNORED_FILES = [
     '__init__.py',
@@ -17,6 +8,12 @@ IGNORED_FILES = [
 
 
 def get_all_source_files() -> List[str]:
+    from plbuild.paths import (
+        SLIDES_SOURCE_PATH,
+        slides_source_path,
+        DOCUMENTS_SOURCE_PATH,
+        documents_source_path,
+    )
     slide_sources = [file for file in next(os.walk(SLIDES_SOURCE_PATH))[2] if file not in IGNORED_FILES]
     slide_sources = [slides_source_path(file) for file in slide_sources]
     doc_sources = [file for file in next(os.walk(DOCUMENTS_SOURCE_PATH))[2] if file not in IGNORED_FILES]
@@ -25,6 +22,9 @@ def get_all_source_files() -> List[str]:
 
 
 def create_presentation_template(name: str):
+    from plbuild.paths import (
+        slides_source_path,
+    )
     base_file_name = get_file_name_from_display_name(name)
     full_file_name = f'{base_file_name}.py'
     file_path = slides_source_path(full_file_name)
@@ -39,6 +39,9 @@ def create_presentation_template(name: str):
 
 
 def create_document_template(name: str):
+    from plbuild.paths import (
+        documents_source_path,
+    )
     base_file_name = get_file_name_from_display_name(name)
     full_file_name = f'{base_file_name}.py'
     file_path = documents_source_path(full_file_name)
@@ -53,6 +56,9 @@ def create_document_template(name: str):
 
 
 def create_template(template_names: Sequence[str], out_path: str):
+    from plbuild.paths import (
+        templates_path_func
+    )
     template_paths = [templates_path_func(template + '.py') for template in template_names]
     template_str = _create_template_str(template_paths)
     with open(out_path, 'w') as f:

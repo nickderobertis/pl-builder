@@ -74,9 +74,12 @@ def init():
 class ProjectExistsException(Exception):
     pass
 
-if __name__ == '__main__':
-    fire.Fire({
+def main():
+    return fire.Fire({
         'build': build,
         'create': create,
         'init': init
     })
+
+if __name__ == '__main__':
+    main()
