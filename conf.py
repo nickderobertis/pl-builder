@@ -5,7 +5,7 @@
 PACKAGE_NAME = 'pl-builder'
 
 # Package version in the format (major, minor, release)
-PACKAGE_VERSION_TUPLE = (0, 1, 0)
+PACKAGE_VERSION_TUPLE = (0, 1, 1)
 
 # Short description of the package
 PACKAGE_SHORT_DESCRIPTION = 'Document building framework built on Pyexlatex'
@@ -47,7 +47,8 @@ PACKAGE_INSTALL_REQUIRES = [
     # e.g.
     # 'package',
     # 'otherpackage>=1,<2'
-    'pyexlatex'
+    'pyexlatex',
+    'fire'
 ]
 
 # Sphinx executes all the import statements as it generates the documentation. To avoid having to install all
@@ -59,6 +60,14 @@ DOCS_OTHER_MOCK_IMPORTS = [
     # 'package',
     'plbuild'
 ]
+
+# Add any Python scripts which should be exposed to the command line in the format:
+# CONSOLE_SCRIPTS = ['funniest-joke=funniest.command_line:main']
+CONSOLE_SCRIPTS = ['plbuilder=plbuilder.cli:main'],
+
+# Add any arbitrary scripts to be exposed to the command line in the format:
+# SCRIPTS = ['bin/funniest-joke']
+SCRIPTS = []
 
 PACKAGE_URLS = {
     'Code': 'https://github.com/whoopnip/pl-builder/',

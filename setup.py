@@ -16,5 +16,7 @@ setup(
     classifiers=conf.PACKAGE_CLASSIFIERS,
     install_requires=conf.PACKAGE_INSTALL_REQUIRES,
     project_urls=conf.PACKAGE_URLS,
-    url=conf.PACKAGE_URLS['Code']
+    url=conf.PACKAGE_URLS['Code'],
+    scripts=conf.SCRIPTS,
+    console_scripts=conf.CONSOLE_SCRIPTS
 )
