@@ -103,7 +103,7 @@ def create_presentation_by_file_path(file_path: str):
         short_title=mod.SHORT_TITLE,
         subtitle=mod.SUBTITLE,
         handouts_outfolder=mod.HANDOUTS_OUTPUT_LOCATION,
-        index=int(file_path[0]),
+        index=mod.ORDER,
         author=mod.AUTHOR,
         short_author=mod.SHORT_AUTHOR,
         institutions=mod.INSTITUTIONS,
