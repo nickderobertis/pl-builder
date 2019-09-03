@@ -1,6 +1,8 @@
 from typing import Sequence, List, Optional, Union
 import importlib.util
 import os
+import sys
+sys.path.append(os.path.abspath(os.getcwd()))  # needed to be able to import local plbuild directory
 
 IGNORED_FILES = [
     '__init__.py',
