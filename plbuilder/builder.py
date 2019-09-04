@@ -93,45 +93,54 @@ def get_file_name_from_display_name(name: str) -> str:
 
 def build_all():
     files = get_all_source_files()
-    [create_presentation_by_file_path(file) for file in files]
+    [build_by_file_path(file) for file in files]
 
 
-def create_presentation_by_file_path(file_path: str):
-    print(f'Creating presentation for {file_path}')
+def build_by_file_path(file_path: str):
     mod = _module_from_file(file_path)
+    print(f'Creating {mod.DOCUMENT_CLASS.__name__} for {file_path}')
+
+    optional_attrs = dict(
+        title='TITLE',
+        short_title='SHORT_TITLE',
+        subtitle='SUBTITLE',
+        handouts_outfolder='HANDOUTS_OUTPUT_LOCATION',
+        index='ORDER',
+        authors='AUTHORS',
+        short_author='SHORT_AUTHOR',
+        institutions='INSTITUTIONS',
+        short_institution='SHORT_INSTITUTION',
+    )
+
+    kwargs = dict(
+        pl_class=mod.DOCUMENT_CLASS,
+        outfolder=mod.OUTPUT_LOCATION,
+    )
+
+    for kwarg, mod_attr in optional_attrs.items():
+        value = getattr(mod, mod_attr, None)
+        if value is not None:
+            kwargs.update({kwarg: value})
 
     build_from_content(
         mod.get_content(),
-        pl_class=mod.DOCUMENT_CLASS,
-        outfolder=mod.OUTPUT_LOCATION,
-        title=getattr(mod, 'TITLE', None),
-        short_title=getattr(mod, 'SHORT_TITLE', None),
-        subtitle=getattr(mod, 'SUBTITLE', None),
-        handouts_outfolder=getattr(mod, 'HANDOUTS_OUTPUT_LOCATION', None),
-        index=getattr(mod, 'ORDER', None),
-        author=getattr(mod, 'AUTHOR', None),
-        short_author=getattr(mod, 'SHORT_AUTHOR', None),
-        institutions=getattr(mod, 'INSTITUTIONS', None),
-        short_institution=getattr(mod, 'SHORT_INSTITUTION', None),
+        **kwargs
     )
 
 
-def build_from_content(content, pl_class, outfolder: str, title: str, short_title: str, subtitle: str,
+def build_from_content(content, pl_class, outfolder: str,
                        handouts_outfolder: Optional[str] = None,
-                       index: Optional[int] = None, author: Optional[str] = None,
-                       short_author: Optional[str] = None, institutions: Optional[Sequence[Sequence[str]]] = None,
-                       short_institution: Optional[str] = None,
-                       ):
+                       index: Optional[int] = None, **kwargs):
+    if 'title' in kwargs:
+        title = kwargs['title']
+    else:
+        title = 'untitled'
+
     out_name = f'{index} {title}' if index is not None else title
-    kwargs = dict(
-        title=title,
-        short_title=short_title,
-        subtitle=subtitle,
-        author=author,
-        short_author=short_author,
-        institutions=institutions,
-        short_institution=short_institution
-    )
+
+    if not os.path.exists(outfolder):
+        os.makedirs(outfolder)
+
     fmp = pl_class(
         content,
         **kwargs

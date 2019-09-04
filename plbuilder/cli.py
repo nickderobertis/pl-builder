@@ -6,7 +6,7 @@ from plbuilder.config import CREATED_DIRECTORY
 
 from plbuilder.builder import (
     build_all,
-    create_presentation_by_file_path,
+    build_by_file_path,
     create_presentation_template,
     create_document_template
 )
@@ -23,7 +23,7 @@ def build(file_path: Optional[str] = None):
     if file_path is None:
         build_all()
     else:
-        create_presentation_by_file_path(file_path)
+        build_by_file_path(file_path)
 
 
 
