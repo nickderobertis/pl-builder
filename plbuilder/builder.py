@@ -122,6 +122,10 @@ def build_by_file_path(file_path: str):
         if value is not None:
             kwargs.update({kwarg: value})
 
+    passed_kwargs = getattr(mod, 'DOCUMENT_CLASS_KWARGS', None)
+    if passed_kwargs:
+        kwargs.update(passed_kwargs)
+
     build_from_content(
         mod.get_content(),
         **kwargs
