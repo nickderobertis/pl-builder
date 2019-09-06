@@ -110,6 +110,7 @@ def build_by_file_path(file_path: str):
         short_author='SHORT_AUTHOR',
         institutions='INSTITUTIONS',
         short_institution='SHORT_INSTITUTION',
+        output_name='OUTPUT_NAME',
     )
 
     kwargs = dict(
@@ -135,12 +136,12 @@ def build_by_file_path(file_path: str):
 def build_from_content(content, pl_class, outfolder: str,
                        handouts_outfolder: Optional[str] = None,
                        index: Optional[int] = None, **kwargs):
-    if 'title' in kwargs:
-        title = kwargs['title']
+    if 'output_name' in kwargs:
+        out_name = kwargs.pop('output_name')
     else:
-        title = 'untitled'
+        out_name = 'untitled'
 
-    out_name = f'{index} {title}' if index is not None else title
+    out_name = f'{index} {out_name}' if index is not None else out_name
 
     if not os.path.exists(outfolder):
         os.makedirs(outfolder)
