@@ -1,13 +1,9 @@
 import os
+import time
 import traceback
-import inotify.adapters
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from plbuilder.builder import build_by_file_path
-
-# extensions of the files that need to be tracked
-TRACKED_FILE_TYPES = ('.py',)
-
-# inotify event types to accept
-CHANGE_EVENTS = ["IN_MOVED_TO", "IN_MODIFY"]
 
 
 def autobuild():
@@ -22,15 +18,37 @@ def autobuild():
 def autobuild_at_path(watch_path: str):
     # setting up inotify and specifying path to watch
     print(f'Starting autobuilder, watching for changes in {watch_path}')
-    inotify_tree = inotify.adapters.InotifyTree(watch_path)
+    observer = Observer()
+    event_handler = AutoBuildEventHandler()
+    observer.schedule(event_handler, watch_path, recursive=True)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
 
-    for event in inotify_tree.event_gen():
-        if event is not None:
-            header, type_names, folder, filename = event
-            if any(x in type_names for x in CHANGE_EVENTS) and filename.endswith(TRACKED_FILE_TYPES):
-                file_path = os.path.join(folder, filename)
+
+old = 0
+
+
+class AutoBuildEventHandler(FileSystemEventHandler):
+
+    def on_modified(self, event: FileSystemEvent):
+        global old
+        super().on_modified(event)
+        if event.src_path.endswith('.py'):
+            # Watchdog has a bug where two events will be triggered very quickly for one modification.
+            # Track whether it's been at least a half second since the last modification, and only then
+            # consider it a valid event
+            stat_buf = os.stat(event.src_path)
+            new = stat_buf.st_mtime
+            if (new - old) > 0.5:
+                # This is a valid event, now the main logic
                 try:
-                    build_by_file_path(file_path)
+                    build_by_file_path(event.src_path)
                 except Exception as e:
                     print(traceback.format_exc())
-                    print(f'Could not complete build for {filename} due to {e.__class__.__name__}: {e}')
+                    print(f'Could not complete build for {event.src_path} due to {e.__class__.__name__}: {e}')
+            old = new
