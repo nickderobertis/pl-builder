@@ -3,7 +3,9 @@ import time
 import traceback
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
-from plbuilder.builder import build_by_file_path
+import subprocess
+import shlex
+import threading
 
 
 def autobuild():
@@ -46,10 +48,34 @@ class AutoBuildEventHandler(FileSystemEventHandler):
             new = stat_buf.st_mtime
             if (new - old) > 0.5:
                 # This is a valid event, now the main logic
-                try:
-                    build_by_file_path(event.src_path)
-                except Exception as e:
-                    print('\n')  # cancels end='' from build_by_file_path
-                    print(traceback.format_exc())
-                    print(f'Could not complete build for {event.src_path} due to {e.__class__.__name__}: {e}')
+                self._build(event.src_path)
             old = new
+
+    def _build(self, file_path: str):
+        """
+        Run build using subprocess so that imports will be executed every time
+        :param file_path:
+        :return:
+        """
+        command = f'plbuilder build {file_path}'
+        run_command(command)
+
+
+
+def run_command(command):
+
+
+    p = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         universal_newlines=True)
+
+    t = threading.Thread(target=_stdout_printer, args=(p,))
+    t.start()
+
+    p.stdin.close()
+    t.join()
+
+
+def _stdout_printer(p):
+    for line in p.stdout:
+        print(line.rstrip())
