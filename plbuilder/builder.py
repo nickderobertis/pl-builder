@@ -1,7 +1,9 @@
-from typing import Sequence, List, Optional, Union
-import importlib.util
+from typing import Sequence, List, Optional
 import os
 import sys
+
+from plbuilder.module_loader import load_module_from_file_with_reimporting
+
 sys.path.append(os.path.abspath(os.getcwd()))  # needed to be able to import local plbuild directory
 
 IGNORED_FILES = [
@@ -80,7 +82,6 @@ def _create_template_str(template_paths: Sequence[str]) -> str:
     return template_str
 
 
-
 def get_file_name_from_display_name(name: str) -> str:
     """
     Converts name to snake case and lower case for use in file name
@@ -97,7 +98,7 @@ def build_all():
 
 
 def build_by_file_path(file_path: str):
-    mod = _module_from_file(file_path)
+    mod = load_module_from_file_with_reimporting(file_path)
     print(f'Creating {mod.DOCUMENT_CLASS.__name__} for {file_path}...', end='')
 
     optional_attrs = dict(
@@ -165,18 +166,6 @@ def build_from_content(content, pl_class, outfolder: str,
             handouts_outfolder,
             out_name
         )
-
-
-def _module_from_file(file_path: str):
-    mod_name = os.path.basename(file_path).strip('.py')
-    return _module_from_file_and_name(file_path, mod_name)
-
-
-def _module_from_file_and_name(file_path: str, module_name: str):
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
 
 
 if __name__ == '__main__':
