@@ -5,7 +5,7 @@
 PACKAGE_NAME = 'pl-builder'
 
 # Package version in the format (major, minor, release)
-PACKAGE_VERSION_TUPLE = (0, 2, 9)
+PACKAGE_VERSION_TUPLE = (0, 3, 0)
 
 # Short description of the package
 PACKAGE_SHORT_DESCRIPTION = 'Document building framework built on Pyexlatex'
@@ -48,7 +48,8 @@ PACKAGE_INSTALL_REQUIRES = [
     # 'package',
     # 'otherpackage>=1,<2'
     'pyexlatex',
-    'fire'
+    'fire',
+    'watchdog'
 ]
 
 # Sphinx executes all the import statements as it generates the documentation. To avoid having to install all

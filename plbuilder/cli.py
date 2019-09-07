@@ -10,6 +10,7 @@ from plbuilder.builder import (
     create_presentation_template,
     create_document_template
 )
+from plbuilder.autoreloader import autobuild
 
 
 def build(file_path: Optional[str] = None):
@@ -83,7 +84,8 @@ def main():
     return fire.Fire({
         'build': build,
         'create': create,
-        'init': init
+        'init': init,
+        'autobuild': autobuild
     })
 
 if __name__ == '__main__':
