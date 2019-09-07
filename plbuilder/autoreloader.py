@@ -49,6 +49,7 @@ class AutoBuildEventHandler(FileSystemEventHandler):
                 try:
                     build_by_file_path(event.src_path)
                 except Exception as e:
+                    print('\n')  # cancels end='' from build_by_file_path
                     print(traceback.format_exc())
                     print(f'Could not complete build for {event.src_path} due to {e.__class__.__name__}: {e}')
             old = new

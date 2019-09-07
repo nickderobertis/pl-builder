@@ -98,7 +98,7 @@ def build_all():
 
 def build_by_file_path(file_path: str):
     mod = _module_from_file(file_path)
-    print(f'Creating {mod.DOCUMENT_CLASS.__name__} for {file_path}')
+    print(f'Creating {mod.DOCUMENT_CLASS.__name__} for {file_path}...', end='')
 
     optional_attrs = dict(
         title='TITLE',
@@ -131,6 +131,7 @@ def build_by_file_path(file_path: str):
         mod.get_content(),
         **kwargs
     )
+    print(' done.')
 
 
 def build_from_content(content, pl_class, outfolder: str,
