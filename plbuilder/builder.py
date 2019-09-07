@@ -97,8 +97,8 @@ def build_all():
 
 
 def build_by_file_path(file_path: str):
+    _print_now(f'Building {file_path}')
     mod = _module_from_file(file_path)
-    print(f'Creating {mod.DOCUMENT_CLASS.__name__} for {file_path}...', end='')
 
     optional_attrs = dict(
         title='TITLE',
@@ -131,18 +131,16 @@ def build_by_file_path(file_path: str):
         mod.get_content(),
         **kwargs
     )
-    print(' done.')
+    out_name = _get_out_name(**kwargs)
+    _print_now(f'Done creating {mod.DOCUMENT_CLASS.__name__}: {out_name}.')
 
 
 def build_from_content(content, pl_class, outfolder: str,
                        handouts_outfolder: Optional[str] = None,
                        index: Optional[int] = None, **kwargs):
+    out_name = _get_out_name(index=index, **kwargs)
     if 'output_name' in kwargs:
-        out_name = kwargs.pop('output_name')
-    else:
-        out_name = 'untitled'
-
-    out_name = f'{index} {out_name}' if index is not None else out_name
+        kwargs.pop('output_name')
 
     if not os.path.exists(outfolder):
         os.makedirs(outfolder)
@@ -167,6 +165,17 @@ def build_from_content(content, pl_class, outfolder: str,
         )
 
 
+def _get_out_name(index: Optional[int] = None, output_name: Optional[str] = None,
+                  **kwargs: dict) ->  str:
+    if output_name is None:
+        output_name = 'untitled'
+
+    if index is None:
+        return output_name
+
+    return f'{index} {output_name}'
+
+
 def _module_from_file(file_path: str):
     mod_name = os.path.basename(file_path).strip('.py')
     return _module_from_file_and_name(file_path, mod_name)
@@ -178,6 +187,10 @@ def _module_from_file_and_name(file_path: str, module_name: str):
     spec.loader.exec_module(mod)
     return mod
 
+
+def _print_now(*args):
+    print(*args)
+    sys.stdout.flush()
 
 if __name__ == '__main__':
     build_all()
