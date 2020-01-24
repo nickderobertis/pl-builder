@@ -2,7 +2,5 @@
 
 ## Links
 
-See the 
-[documentation here.](
-https://whoopnip.github.io/pl-builder/
-)
+See the
+[documentation here.](https://nickderobertis.github.io/pl-builder/)

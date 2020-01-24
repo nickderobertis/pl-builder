@@ -71,6 +71,6 @@ CONSOLE_SCRIPTS = ['plbuilder=plbuilder.cli:main'],
 SCRIPTS = []
 
 PACKAGE_URLS = {
-    'Code': 'https://github.com/whoopnip/pl-builder/',
-    'Documentation': 'https://whoopnip.github.io/pl-builder/'
+    'Code': 'https://github.com/nickderobertis/pl-builder/',
+    'Documentation': 'https://nickderobertis.github.io/pl-builder/'
 }
