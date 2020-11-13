@@ -134,7 +134,7 @@ def build_by_file_path(file_path: str, desired_output_format: Optional[OutputFor
 
     output_format = OutputFormats.PDF
     if 'default_output_format' in kwargs:
-        output_format = kwargs['default_output_format']
+        output_format = kwargs.pop('default_output_format')
     if desired_output_format is not None:
         output_format = desired_output_format
 
