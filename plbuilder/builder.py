@@ -2,6 +2,10 @@ from typing import Sequence, List, Optional, Union
 import importlib.util
 import os
 import sys
+
+from pyexlatex.logic.output.api.formats import OutputFormats
+from pyexlatex.models.document import DocumentBase
+
 sys.path.append(os.path.abspath(os.getcwd()))  # needed to be able to import local plbuild directory
 
 IGNORED_FILES = [
@@ -91,12 +95,12 @@ def get_file_name_from_display_name(name: str) -> str:
     return name.replace(' ', '_').lower()
 
 
-def build_all():
+def build_all(desired_output_format: Optional[OutputFormats] = None):
     files = get_all_source_files()
-    [build_by_file_path(file) for file in files]
+    [build_by_file_path(file, desired_output_format=desired_output_format) for file in files]
 
 
-def build_by_file_path(file_path: str):
+def build_by_file_path(file_path: str, desired_output_format: Optional[OutputFormats] = None):
     _print_now(f'Building {file_path}')
     mod = _module_from_file(file_path)
 
@@ -111,6 +115,7 @@ def build_by_file_path(file_path: str):
         institutions='INSTITUTIONS',
         short_institution='SHORT_INSTITUTION',
         output_name='OUTPUT_NAME',
+        default_output_format='DEFAULT_OUTPUT_FORMAT',
     )
 
     kwargs = dict(
@@ -127,8 +132,15 @@ def build_by_file_path(file_path: str):
     if passed_kwargs:
         kwargs.update(passed_kwargs)
 
+    output_format = OutputFormats.PDF
+    if 'default_output_format' in kwargs:
+        output_format = kwargs['default_output_format']
+    if desired_output_format is not None:
+        output_format = desired_output_format
+
     build_from_content(
         mod.get_content(),
+        output_format=output_format,
         **kwargs
     )
     out_name = _get_out_name(**kwargs)
@@ -137,7 +149,8 @@ def build_by_file_path(file_path: str):
 
 def build_from_content(content, pl_class, outfolder: str,
                        handouts_outfolder: Optional[str] = None,
-                       index: Optional[int] = None, **kwargs):
+                       index: Optional[int] = None,
+                       output_format: OutputFormats = OutputFormats.PDF, **kwargs):
     out_name = _get_out_name(index=index, **kwargs)
     if 'output_name' in kwargs:
         kwargs.pop('output_name')
@@ -149,20 +162,26 @@ def build_from_content(content, pl_class, outfolder: str,
         content,
         **kwargs
     )
-    fmp.to_pdf(
-        outfolder,
-        out_name
-    )
+    _output_document(fmp, outfolder, out_name, output_format=output_format)
     if handouts_outfolder is not None:
         fmp_handout = pl_class(
             content,
             handouts=True,
             **kwargs
         )
-        fmp_handout.to_pdf(
-            handouts_outfolder,
-            out_name
-        )
+        _output_document(fmp_handout, handouts_outfolder, out_name, output_format=output_format)
+
+
+def _output_document(doc: DocumentBase, outfolder: str, out_name: str,
+                     output_format: OutputFormats = OutputFormats.PDF):
+    if output_format == OutputFormats.PDF:
+        out_method = getattr(doc, 'to_pdf')
+    elif output_format == OutputFormats.HTML:
+        out_method = getattr(doc, 'to_html')
+    else:
+        raise ValueError(f'unsupported output format {output_format}')
+
+    out_method(outfolder, out_name)
 
 
 def _get_out_name(index: Optional[int] = None, output_name: Optional[str] = None,
