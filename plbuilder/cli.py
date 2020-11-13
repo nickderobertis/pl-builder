@@ -2,6 +2,9 @@ from typing import Optional
 import fire
 import shutil
 import os
+
+from pyexlatex.logic.output.api.formats import OutputFormats
+
 from plbuilder.config import CREATED_DIRECTORY
 
 from plbuilder.builder import (
@@ -13,19 +16,21 @@ from plbuilder.builder import (
 from plbuilder.autoreloader import autobuild
 
 
-def build(file_path: Optional[str] = None):
+def build(file_path: Optional[str] = None, output_format: Optional[OutputFormats] = None):
     """
     Create slides and handout PDFs from plbuilder pyexlatex templates.
     Passing no arguments will build all templates.
 
     :param file_path: path of template from which to build PDFs
+    :param output_format: the file type of the output, currently 'pdf' and 'html' are supported.
+        If not passed, will fall back to the setting of DEFAULT_OUTPUT_FORMAT in the file. If that
+        is not passed, will default to 'pdf'
     :return: None
     """
     if file_path is None:
-        build_all()
+        build_all(desired_output_format=output_format)
     else:
-        build_by_file_path(file_path)
-
+        build_by_file_path(file_path, desired_output_format=output_format)
 
 
 def create(doc_type: str, name: str):
