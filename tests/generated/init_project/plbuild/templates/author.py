@@ -1,2 +1,0 @@
-
-AUTHORS = ['Nick DeRobertis']
