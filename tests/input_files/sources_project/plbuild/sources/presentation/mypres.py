@@ -4,8 +4,8 @@ import pyexlatex.presentation as lp
 import pyexlatex.graphics as lg
 import pyexlatex.layouts as ll
 
-import plbuild
-from plbuild.paths import images_path
+from plbuilder import paths
+from plbuilder.paths import images_path
 
 
 AUTHORS = ['Nick DeRobertis']
@@ -19,8 +19,8 @@ INSTITUTIONS = [
 SHORT_INSTITUTION = 'UF'
 
 DOCUMENT_CLASS = lp.Presentation
-OUTPUT_LOCATION = plbuild.paths.SLIDES_BUILD_PATH
-HANDOUTS_OUTPUT_LOCATION = plbuild.paths.HANDOUTS_BUILD_PATH
+OUTPUT_LOCATION = paths.SLIDES_BUILD_PATH
+HANDOUTS_OUTPUT_LOCATION = paths.HANDOUTS_BUILD_PATH
 TITLE = ''
 ORDER = None
 
