@@ -1,0 +1,22 @@
+{
+  "template": "https://github.com/nickderobertis/cookiecutter-pypi-sphinx",
+  "commit": "091fcff1b2a425adc13a75fc587fbbb190b7ca3a",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "package_name": "pl-builder",
+      "package_directory": "plbuilder",
+      "full_name": "Pyexlatex Document Building Framework",
+      "repo_name": "pl-builder",
+      "repo_username": "nickderobertis",
+      "short_description": "Pyexlatex Document Building Framework",
+      "package_author": "Nick DeRobertis",
+      "author_email": "whoopnip@gmail.com",
+      "google_analytics_id": "",
+      "logo_url": "",
+      "install_packages": "jupyterlab, pyexlatex, fire, watchdog",
+      "_template": "https://github.com/nickderobertis/cookiecutter-pypi-sphinx"
+    }
+  },
+  "directory": null
+}
