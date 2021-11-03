@@ -21,9 +21,6 @@ def initialize_project(in_directory: Union[str, Path] = None):
     templates_out_path = os.path.join(new_directory, 'templates')
     shutil.copytree(templates_source, templates_out_path)
 
-    paths_source = os.path.join(pl_builder_source_path, 'paths.py')
-    shutil.copy(paths_source, new_directory)
-
     sources_path = os.path.join(new_directory, 'sources')
     presentation_sources_path = os.path.join(sources_path, 'presentation')
     document_sources_path = os.path.join(sources_path, 'document')
