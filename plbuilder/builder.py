@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Sequence, List, Optional, Union
 import importlib.util
 import os
@@ -171,6 +172,9 @@ def build_from_content(
     fmp = pl_class(content, **kwargs)
     _output_document(fmp, outfolder, out_name, output_format=output_format)
     if handouts_outfolder is not None:
+        handouts_path = Path(handouts_outfolder)
+        if not handouts_path.exists():
+            handouts_path.mkdir()
         fmp_handout = pl_class(content, handouts=True, **kwargs)
         _output_document(
             fmp_handout, handouts_outfolder, out_name, output_format=output_format
