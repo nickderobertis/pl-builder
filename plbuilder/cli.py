@@ -14,6 +14,7 @@ from plbuilder.builder import (
     create_document_template
 )
 from plbuilder.autoreloader import autobuild
+from plbuilder.init import initialize_project
 
 
 def build(file_path: Optional[str] = None, output_format: Optional[OutputFormats] = None):
@@ -57,33 +58,10 @@ def init():
 
     :return:
     """
-    if os.path.exists(CREATED_DIRECTORY):
-        raise ProjectExistsException(f'{os.getcwd()}')
-
-    os.makedirs(CREATED_DIRECTORY)
-
-    pl_builder_source_path = os.path.dirname(os.path.abspath(__file__))
-
-    templates_source = os.path.join(pl_builder_source_path, 'templates')
-    templates_out_path = os.path.join(CREATED_DIRECTORY, 'templates')
-    shutil.copytree(templates_source, templates_out_path)
-
-    paths_source = os.path.join(pl_builder_source_path, 'paths.py')
-    shutil.copy(paths_source, CREATED_DIRECTORY)
-
-    sources_path = os.path.join(CREATED_DIRECTORY, 'sources')
-    presentation_sources_path = os.path.join(sources_path, 'presentation')
-    document_sources_path = os.path.join(sources_path, 'document')
-    os.makedirs(presentation_sources_path)
-    os.makedirs(document_sources_path)
-
-    assets_path = os.path.join(CREATED_DIRECTORY, 'assets')
-    images_path = os.path.join(assets_path, 'images')
-    os.makedirs(images_path)
+    initialize_project()
 
 
-class ProjectExistsException(Exception):
-    pass
+
 
 def main():
     return fire.Fire({
