@@ -1,29 +1,43 @@
-.. pypi-sphinx-quickstart documentation master file, created by
-   pypi-sphinx-quickstart.
+.. pl-builder documentation master file, created by
+   cookiecutter-pypi-sphinx.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Pyexlatex Builder documentation!
-*********************************************
+Welcome to Pyexlatex Document Building Framework documentation!
+********************************************************************
 
-Some intro text. To get started, look here.
+Pyexlatex Document Building Framework
+
+To get started, look here.
 
 .. toctree::
+   :caption: Tutorial
 
    tutorial
-
+   auto_examples/index
 
 An overview
 ===========
 
-Work in progress
+Quick Links
+------------
 
-API Documentation
-------------------
+Find the source code `on Github <https://github.com/nickderobertis/pl-builder>`_.
 
-A full list of modules
+
+pl-builder
+-------------------------------------------------------
+
+
+This is a simple example:
+
+.. code:: python
+
+    import plbuilder
+
 
 .. toctree:: api/modules
+   :caption: API Documentation
    :maxdepth: 3
 
 Indices and tables

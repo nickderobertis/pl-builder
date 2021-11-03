@@ -11,4 +11,10 @@ Install via::
 Usage
 =========
 
-Work in progress.
+Some highlighted functionality.
+
+This is a simple example::
+
+    import plbuilder
+
+
