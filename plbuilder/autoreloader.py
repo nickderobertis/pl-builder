@@ -7,13 +7,14 @@ import subprocess
 import shlex
 import threading
 
+from plbuilder.paths import SOURCE_PATH
+
 
 def autobuild():
     """
     Starts a process which watches for file system events on sources in the current pl-builder project, and
     automatically builds sources in response to changes.
     """
-    from plbuild.paths import SOURCE_PATH
     autobuild_at_path(SOURCE_PATH)
 
 
