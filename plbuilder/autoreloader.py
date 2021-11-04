@@ -32,7 +32,7 @@ def autobuild_at_path(watch_path: str):
     observer.join()
 
 
-old = 0
+old = 0.0
 
 
 class AutoBuildEventHandler(FileSystemEventHandler):

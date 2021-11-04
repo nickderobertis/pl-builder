@@ -116,8 +116,10 @@ def _module_from_file(file_path: str):
 
 def _module_from_file_and_name(file_path: str, module_name: str):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None:
+        raise ValueError(f"could not extract spec from {file_path} {module_name}")
     mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    spec.loader.exec_module(mod)  # type: ignore
     return mod
 
 
