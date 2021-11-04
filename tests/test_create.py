@@ -33,3 +33,6 @@ def test_create_document():
     assert are_dir_trees_equal(
         INPUT_DOCUMENT_SOURCES_FOLDER, GENERATED_DOCUMENT_SOURCES_FOLDER
     )
+
+
+# TODO: add tests for overriding templates, custom templates

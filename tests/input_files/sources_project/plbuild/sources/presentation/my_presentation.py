@@ -12,6 +12,7 @@ from plbuilder.paths import images_path
 from plbuilder.builder import BuildConfig, BuildOptions
 
 AUTHORS = ['']
+SHORT_AUTHOR = ''
 
 
 TITLE = "My Presentation"
@@ -28,7 +29,6 @@ OUTPUT_NAME = TITLE
 SHORT_TITLE = ''
 SUBTITLE = ''
 
-SHORT_AUTHOR = ''
 INSTITUTIONS = [
     ['Some Institution', 'Some Department'],
 ]
