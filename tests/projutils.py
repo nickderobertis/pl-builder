@@ -16,7 +16,7 @@ def regenerate_generated_init_project():
 def reset_project(directory: Path):
     if directory.exists():
         shutil.rmtree(directory)
-    directory.mkdir()
+    directory.mkdir(parents=True)
 
 
 def regenerate_project(directory: Path):
