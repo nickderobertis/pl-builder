@@ -10,7 +10,7 @@ from tests.config import (
     INPUT_DOCUMENT_SOURCES_FOLDER,
     GENERATED_DOCUMENT_SOURCES_FOLDER, GENERATED_TEMPLATES_PATH,
 )
-from tests.dirutils import are_dir_trees_equal
+from tests.dirutils import assert_dir_trees_are_equal
 from tests.projutils import regenerate_generated_init_project
 
 
@@ -29,14 +29,14 @@ def _replace_local_template(name: str, content: str):
 
 def test_create_presentation():
     create_template("presentation", "My Presentation")
-    assert are_dir_trees_equal(
+    assert_dir_trees_are_equal(
         INPUT_PRESENTATION_SOURCES_FOLDER, GENERATED_PRESENTATION_SOURCES_FOLDER
     )
 
 
 def test_create_document():
     create_template("document", "My Document")
-    assert are_dir_trees_equal(
+    assert_dir_trees_are_equal(
         INPUT_DOCUMENT_SOURCES_FOLDER, GENERATED_DOCUMENT_SOURCES_FOLDER
     )
 
