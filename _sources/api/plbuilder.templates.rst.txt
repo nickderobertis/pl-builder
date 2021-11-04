@@ -1,0 +1,7 @@
+plbuilder.templates package
+===========================
+
+.. automodule:: plbuilder.templates
+   :members:
+   :undoc-members:
+   :show-inheritance:

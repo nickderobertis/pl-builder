@@ -1,0 +1,82 @@
+plbuilder package
+=================
+
+.. automodule:: plbuilder
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+   plbuilder.templates
+
+Submodules
+----------
+
+plbuilder.autoreloader module
+-----------------------------
+
+.. automodule:: plbuilder.autoreloader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plbuilder.builder module
+------------------------
+
+.. automodule:: plbuilder.builder
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plbuilder.cli module
+--------------------
+
+.. automodule:: plbuilder.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plbuilder.config module
+-----------------------
+
+.. automodule:: plbuilder.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plbuilder.creator module
+------------------------
+
+.. automodule:: plbuilder.creator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plbuilder.init module
+---------------------
+
+.. automodule:: plbuilder.init
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plbuilder.paths module
+----------------------
+
+.. automodule:: plbuilder.paths
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+plbuilder.templater module
+--------------------------
+
+.. automodule:: plbuilder.templater
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
