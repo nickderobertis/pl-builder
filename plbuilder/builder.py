@@ -4,6 +4,7 @@ import importlib.util
 import os
 import sys
 
+from pydantic import BaseModel
 from pyexlatex.logic.output.api.formats import OutputFormats
 from pyexlatex.models.document import DocumentBase
 
@@ -11,8 +12,10 @@ from plbuilder.paths import (
     SLIDES_SOURCE_PATH,
     slides_source_path,
     DOCUMENTS_SOURCE_PATH,
-    documents_source_path, templates_path_func,
+    documents_source_path,
+    templates_path_func,
 )
+from plbuilder.templater import output_template
 
 sys.path.append(
     os.path.abspath(os.getcwd())
@@ -21,6 +24,21 @@ sys.path.append(
 IGNORED_FILES = [
     "__init__.py",
 ]
+
+
+class BuildOptions(BaseModel):
+    output_folder: Path
+    file_name: str
+    output_format: OutputFormats = OutputFormats.PDF
+    handouts_folder: Optional[Path] = None
+
+
+class BuildConfig(BaseModel):
+    model: DocumentBase
+    options: BuildOptions
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 def get_all_source_files() -> List[str]:
@@ -40,66 +58,6 @@ def get_all_source_files() -> List[str]:
     return slide_sources + doc_sources
 
 
-def create_presentation_template(name: str):
-    base_file_name = get_file_name_from_display_name(name)
-    full_file_name = f"{base_file_name}.py"
-    file_path = slides_source_path(full_file_name)
-    create_template(
-        [
-            "general_imports",
-            "presentation_imports",
-            "author",
-            "presentation",
-            "general",
-        ],
-        out_path=file_path,
-    )
-
-
-def create_document_template(name: str):
-    base_file_name = get_file_name_from_display_name(name)
-    full_file_name = f"{base_file_name}.py"
-    file_path = documents_source_path(full_file_name)
-    create_template(
-        [
-            "general_imports",
-            "document_imports",
-            "author",
-            "document",
-            "general",
-        ],
-        out_path=file_path,
-    )
-
-
-def create_template(template_names: Sequence[str], out_path: str):
-    template_paths = [
-        templates_path_func(template + ".py") for template in template_names
-    ]
-    template_str = _create_template_str(template_paths)
-    with open(out_path, "w") as f:
-        f.write(template_str)
-
-
-def _create_template_str(template_paths: Sequence[str]) -> str:
-    template_str = ""
-    for path in template_paths:
-        with open(path, "r") as f:
-            template_str += f.read()
-    template_str += "\n"
-    return template_str
-
-
-def get_file_name_from_display_name(name: str) -> str:
-    """
-    Converts name to snake case and lower case for use in file name
-
-    :param name: display name, can have spaces and capitalization
-    :return:
-    """
-    return name.replace(" ", "_").lower()
-
-
 def build_all(desired_output_format: Optional[OutputFormats] = None):
     files = get_all_source_files()
     [
@@ -114,71 +72,25 @@ def build_by_file_path(
     _print_now(f"Building {file_path}")
     mod = _module_from_file(file_path)
 
-    optional_attrs = dict(
-        title="TITLE",
-        short_title="SHORT_TITLE",
-        subtitle="SUBTITLE",
-        handouts_outfolder="HANDOUTS_OUTPUT_LOCATION",
-        index="ORDER",
-        authors="AUTHORS",
-        short_author="SHORT_AUTHOR",
-        institutions="INSTITUTIONS",
-        short_institution="SHORT_INSTITUTION",
-        output_name="OUTPUT_NAME",
-        default_output_format="DEFAULT_OUTPUT_FORMAT",
+    configs: List[BuildConfig] = mod.get_outputs()  # type: ignore
+    for config in configs:
+        if desired_output_format is not None:
+            # Override file setting if user passes setting in CLI
+            config.options.output_format = desired_output_format
+        _build_by_config(config)
+        _print_now(f"Done creating {config.options.file_name}.")
+
+
+def _build_by_config(config: BuildConfig):
+    if not os.path.exists(config.options.output_folder):
+        os.makedirs(config.options.output_folder)
+
+    _output_document(
+        config.model,
+        str(config.options.output_folder),
+        config.options.file_name,
+        output_format=config.options.output_format,
     )
-
-    kwargs = dict(
-        pl_class=mod.DOCUMENT_CLASS,
-        outfolder=mod.OUTPUT_LOCATION,
-    )
-
-    for kwarg, mod_attr in optional_attrs.items():
-        value = getattr(mod, mod_attr, None)
-        if value is not None:
-            kwargs.update({kwarg: value})
-
-    passed_kwargs = getattr(mod, "DOCUMENT_CLASS_KWARGS", None)
-    if passed_kwargs:
-        kwargs.update(passed_kwargs)
-
-    output_format = OutputFormats.PDF
-    if "default_output_format" in kwargs:
-        output_format = kwargs.pop("default_output_format")
-    if desired_output_format is not None:
-        output_format = desired_output_format
-
-    build_from_content(mod.get_content(), output_format=output_format, **kwargs)
-    out_name = _get_out_name(**kwargs)
-    _print_now(f"Done creating {mod.DOCUMENT_CLASS.__name__}: {out_name}.")
-
-
-def build_from_content(
-    content,
-    pl_class,
-    outfolder: str,
-    handouts_outfolder: Optional[str] = None,
-    index: Optional[int] = None,
-    output_format: OutputFormats = OutputFormats.PDF,
-    **kwargs,
-):
-    out_name = _get_out_name(index=index, **kwargs)
-    if "output_name" in kwargs:
-        kwargs.pop("output_name")
-
-    if not os.path.exists(outfolder):
-        os.makedirs(outfolder)
-
-    fmp = pl_class(content, **kwargs)
-    _output_document(fmp, outfolder, out_name, output_format=output_format)
-    if handouts_outfolder is not None:
-        handouts_path = Path(handouts_outfolder)
-        if not handouts_path.exists():
-            handouts_path.mkdir()
-        fmp_handout = pl_class(content, handouts=True, **kwargs)
-        _output_document(
-            fmp_handout, handouts_outfolder, out_name, output_format=output_format
-        )
 
 
 def _output_document(
@@ -197,18 +109,6 @@ def _output_document(
     out_method(outfolder, out_name)
 
 
-def _get_out_name(
-    index: Optional[int] = None, output_name: Optional[str] = None, **kwargs: dict
-) -> str:
-    if output_name is None:
-        output_name = "untitled"
-
-    if index is None:
-        return output_name
-
-    return f"{index} {output_name}"
-
-
 def _module_from_file(file_path: str):
     mod_name = os.path.basename(file_path).strip(".py")
     return _module_from_file_and_name(file_path, mod_name)
@@ -216,8 +116,10 @@ def _module_from_file(file_path: str):
 
 def _module_from_file_and_name(file_path: str, module_name: str):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None:
+        raise ValueError(f"could not extract spec from {file_path} {module_name}")
     mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    spec.loader.exec_module(mod)  # type: ignore
     return mod
 
 

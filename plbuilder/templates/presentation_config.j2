@@ -1,11 +1,7 @@
 SHORT_TITLE = ''
 SUBTITLE = ''
 
-SHORT_AUTHOR = 'DeRobertis'
-INSTITUTIONS = [
-    ['University of Florida', 'Department of Finance, Insurance, and Real Estate'],
-]
-SHORT_INSTITUTION = 'UF'
+{% include "organization.j2" %}
 
 DOCUMENT_CLASS = lp.Presentation
 OUTPUT_LOCATION = paths.SLIDES_BUILD_PATH

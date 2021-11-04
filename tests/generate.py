@@ -1,10 +1,7 @@
 import os
 
-from plbuilder.builder import (
-    create_presentation_template,
-    create_document_template,
-    build_all,
-)
+from plbuilder.builder import build_all
+from plbuilder.creator import create_template
 from tests.config import INIT_PROJECT_INPUT_FOLDER, SOURCES_PROJECT_INPUT_FOLDER
 from tests.projutils import regenerate_project
 
@@ -22,11 +19,11 @@ def _generate_project_with_sources():
 
 
 def _generate_presentation():
-    create_presentation_template("mypres")
+    create_template("presentation", "My Presentation")
 
 
 def _generate_document():
-    create_document_template("mydoc")
+    create_template("document", "My Document")
 
 
 def _build():
