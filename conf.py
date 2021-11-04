@@ -20,7 +20,7 @@ REPO_MAINTAINERS = [
 ]
 
 # Package version in the format (major, minor, release)
-PACKAGE_VERSION_TUPLE = (1, 0, 0)
+PACKAGE_VERSION_TUPLE = (1, 0, 1)
 
 # Short description of the package
 PACKAGE_SHORT_DESCRIPTION = "Pyexlatex Document Building Framework"
@@ -62,6 +62,11 @@ PACKAGE_INSTALL_REQUIRES = [
     # e.g.
     # 'package',
     # 'otherpackage>=1,<2'
+    "pyexlatex",
+    "fire",
+    "watchdog",
+    "jinja2",
+    "pydantic",
 ]
 
 # Add any third party packages you use in requirements for optional features of your package here
