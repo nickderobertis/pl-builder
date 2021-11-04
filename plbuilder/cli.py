@@ -10,10 +10,9 @@ from plbuilder.config import CREATED_DIRECTORY
 from plbuilder.builder import (
     build_all,
     build_by_file_path,
-    create_presentation_template,
-    create_document_template
 )
 from plbuilder.autoreloader import autobuild
+from plbuilder.creator import create_template
 from plbuilder.init import initialize_project
 
 
@@ -38,17 +37,12 @@ def create(doc_type: str, name: str):
     """
     Creates a slide template using the passed name
 
-    :param doc_type: 'presentation' or 'document'
+    :param doc_type: 'presentation', 'document', or the name of a custom template
     :param name: Display name, will be standardized to snakecase and lowercase for use in the file name
     :return:
     """
     doc_type = doc_type.lower().strip()
-    if doc_type == 'presentation':
-        create_presentation_template(name)
-    elif doc_type == 'document':
-        create_document_template(name)
-    else:
-        raise ValueError(f'must pass document or presentation as first argument, got {doc_type}')
+    create_template(doc_type, name)
 
 
 def init():

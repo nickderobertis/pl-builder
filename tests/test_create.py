@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from plbuilder.builder import create_presentation_template, create_document_template
+from plbuilder.creator import create_template
 from tests.config import (
     GENERATED_PROJECT_FOLDER,
     INPUT_PRESENTATION_SOURCES_FOLDER,
@@ -22,10 +22,14 @@ def before_each():
 
 
 def test_create_presentation():
-    create_presentation_template("mypres")
-    assert are_dir_trees_equal(INPUT_PRESENTATION_SOURCES_FOLDER, GENERATED_PRESENTATION_SOURCES_FOLDER)
+    create_template("presentation", "My Presentation")
+    assert are_dir_trees_equal(
+        INPUT_PRESENTATION_SOURCES_FOLDER, GENERATED_PRESENTATION_SOURCES_FOLDER
+    )
 
 
 def test_create_document():
-    create_document_template("mydoc")
-    assert are_dir_trees_equal(INPUT_DOCUMENT_SOURCES_FOLDER, GENERATED_DOCUMENT_SOURCES_FOLDER)
+    create_template("document", "My Document")
+    assert are_dir_trees_equal(
+        INPUT_DOCUMENT_SOURCES_FOLDER, GENERATED_DOCUMENT_SOURCES_FOLDER
+    )
