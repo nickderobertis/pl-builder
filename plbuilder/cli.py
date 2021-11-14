@@ -1,11 +1,10 @@
+from pathlib import Path
 from typing import Optional
 import fire
 import shutil
 import os
 
 from pyexlatex.logic.output.api.formats import OutputFormats
-
-from plbuilder.config import CREATED_DIRECTORY
 
 from plbuilder.builder import (
     build_all,
@@ -14,9 +13,13 @@ from plbuilder.builder import (
 from plbuilder.autoreloader import autobuild
 from plbuilder.creator import create_template
 from plbuilder.init import initialize_project
+from plbuilder.paths import templates_path_func
+from plbuilder.templater import DEFAULT_TEMPLATE
 
 
-def build(file_path: Optional[str] = None, output_format: Optional[OutputFormats] = None):
+def build(
+    file_path: Optional[str] = None, output_format: Optional[OutputFormats] = None
+):
     """
     Create slides and handout PDFs from plbuilder pyexlatex templates.
     Passing no arguments will build all templates.
@@ -45,6 +48,33 @@ def create(doc_type: str, name: str):
     create_template(doc_type, name)
 
 
+def override(template_name: str):
+    """
+    Overrides a default template by copying it into plbuild/templates
+
+    :param template_name: 'always_body', 'always_imports', 'author', 'document', 'document_build',
+     'document_config', 'organization', 'presentation', 'presentation_build', 'presentation_config',
+      or the name of a custom template
+    :return:
+    """
+    template_file = f"{template_name}.j2"
+    templates_path = Path("plbuild") / "templates"
+    if not templates_path.exists():
+        raise ValueError(
+            "Could not find plbuild directory, navigate to project root or call init"
+        )
+    orig_template_path = templates_path_func(template_file)
+    if os.path.exists(orig_template_path):
+        print(f"Overriding {template_name} by outputting to {templates_path}")
+        shutil.copy(orig_template_path, templates_path)
+    else:
+        # Custom template name
+        print(
+            f"Creating new custom document type {template_name} by outputting to {templates_path}"
+        )
+        (templates_path / template_file).write_text(DEFAULT_TEMPLATE)
+
+
 def init():
     """
     Creates a plbuilder project in the current directory
@@ -55,15 +85,17 @@ def init():
     initialize_project()
 
 
-
-
 def main():
-    return fire.Fire({
-        'build': build,
-        'create': create,
-        'init': init,
-        'autobuild': autobuild
-    })
+    return fire.Fire(
+        {
+            "build": build,
+            "create": create,
+            "init": init,
+            "autobuild": autobuild,
+            "override": override,
+        }
+    )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

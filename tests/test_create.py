@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 
@@ -8,7 +9,9 @@ from tests.config import (
     INPUT_PRESENTATION_SOURCES_FOLDER,
     GENERATED_PRESENTATION_SOURCES_FOLDER,
     INPUT_DOCUMENT_SOURCES_FOLDER,
-    GENERATED_DOCUMENT_SOURCES_FOLDER, GENERATED_TEMPLATES_PATH,
+    GENERATED_DOCUMENT_SOURCES_FOLDER,
+    GENERATED_TEMPLATES_PATH,
+    GENERATED_SOURCES_FOLDER,
 )
 from tests.dirutils import assert_dir_trees_are_equal
 from tests.projutils import regenerate_generated_init_project
@@ -26,6 +29,10 @@ def _replace_local_template(name: str, content: str):
     template_path.write_text(content)
 
 
+def _get_generated_source(doc_type: str, name: str) -> str:
+    path = GENERATED_SOURCES_FOLDER / doc_type / f"{name}.py"
+    return path.read_text()
+
 
 def test_create_presentation():
     create_template("presentation", "My Presentation")
@@ -40,16 +47,10 @@ def test_create_document():
         INPUT_DOCUMENT_SOURCES_FOLDER, GENERATED_DOCUMENT_SOURCES_FOLDER
     )
 
-# TODO: add tests for overriding templates, custom templates
 
-# def test_override_template():
-#     # expect_content = "some content"
-#     # _replace_local_template("document", expect_content)
-#     create_template("document", "My Document")
-#     breakpoint()
-#
-# def test_custom_template():
-#     expect_content = "some content"
-#     _replace_local_template("mycustom", expect_content)
-#     create_template("mycustom", "My Custom")
-
+def test_custom_template():
+    expect_content = "some content"
+    _replace_local_template("document", expect_content)
+    create_template("document", "My Document")
+    source = _get_generated_source("document", "my_document")
+    assert source == expect_content
