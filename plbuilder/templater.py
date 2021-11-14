@@ -6,6 +6,14 @@ from typing_extensions import TypedDict
 
 import jinja2
 
+DEFAULT_TEMPLATE = """
+{% include "always_imports.j2" %}
+
+{% include "author.j2" %}
+
+{% include "always_body.j2" %}
+"""
+
 
 class TemplateData(TypedDict):
     title: str
