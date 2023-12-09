@@ -8,7 +8,7 @@ from plbuilder.config import CREATED_DIRECTORY
 COPY_TEMPLATES: Final = ["author", "organization"]
 
 
-def initialize_project(in_directory: Union[str, Path] = None):
+def initialize_project(in_directory: Union[str, Path, None] = None):
     in_directory = Path(in_directory or os.getcwd())
     new_directory = in_directory / CREATED_DIRECTORY
 
