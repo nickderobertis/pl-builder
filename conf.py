@@ -66,7 +66,7 @@ PACKAGE_INSTALL_REQUIRES = [
     "fire",
     "watchdog",
     "jinja2",
-    "pydantic",
+    "pydantic>=2",
 ]
 
 # Add any third party packages you use in requirements for optional features of your package here

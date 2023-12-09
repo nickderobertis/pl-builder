@@ -4,7 +4,7 @@ import importlib.util
 import os
 import sys
 
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from pyexlatex.logic.output.api.formats import OutputFormats
 from pyexlatex.models.document import DocumentBase
 
@@ -36,9 +36,7 @@ class BuildOptions(BaseModel):
 class BuildConfig(BaseModel):
     model: DocumentBase
     options: BuildOptions
-
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 def get_all_source_files() -> List[str]:
